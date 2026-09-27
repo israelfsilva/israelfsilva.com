@@ -1,0 +1,253 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Controls from './Controls.astro';
+import { ui, formatDate, homePath, postPath, type Lang } from '../i18n';
+import { getPosts, readingTime, type Post } from '../posts';
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { lang, slug } = post;
+const other: Lang = lang === 'pt' ? 'en' : 'pt';
+
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
+
+const all = await getPosts();
+const siblings = all.filter((p) => p.lang === lang);
+const next = siblings[siblings.findIndex((p) => p.id === post.id) + 1];
+const translation = all.find((p) => p.lang === other && p.slug === slug);
+
+const hrefs = {
+  [lang]: postPath(lang, slug),
+  [other]: translation ? postPath(other, slug) : homePath(other),
+} as Record<Lang, string>;
+const alternates = translation ? hrefs : { [lang]: hrefs[lang] };
+---
+
+<Base lang={lang} title={`${post.data.title} — Israel Silva`} description={post.data.description} alternates={alternates} type="article">
+  <div class="grid">
+    {
+      toc.length > 1 && (
+        <aside class="toc">
+          <nav aria-label={ui.toc[lang]}>
+            {toc.map((h, i) => (
+              <a href={`#${h.slug}`} data-toc={h.slug} aria-current={i === 0 ? 'true' : undefined}>
+                <span class="bar" />
+                {h.text}
+              </a>
+            ))}
+          </nav>
+        </aside>
+      )
+    }
+
+    <main>
+      <header class="top">
+        <a class="link-muted" href={homePath(lang)}>← Israel Silva</a>
+        <Controls lang={lang} hrefs={hrefs} />
+      </header>
+
+      <article>
+        <h1>{post.data.title}</h1>
+        <p class="meta">
+          <time datetime={post.data.date.toISOString().slice(0, 10)}>{formatDate(post.data.date, lang)}</time>
+          {' · '}{readingTime(post.body)} {ui.minRead[lang]}
+        </p>
+        <div class="prose">
+          <Content />
+        </div>
+      </article>
+
+      <nav class="foot">
+        <a class="link-muted" href={homePath(lang)}>{ui.allWriting[lang]}</a>
+        {next && <a class="link-muted" href={postPath(lang, next.slug)}>{next.data.title} →</a>}
+      </nav>
+    </main>
+    <div></div>
+  </div>
+</Base>
+
+<style>
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 600px) minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 24px;
+  }
+
+  .toc {
+    grid-column: 1;
+    grid-row: 1;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    padding-top: 144px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .toc nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 180px;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .toc a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    color: var(--muted);
+  }
+  .toc a:hover, .toc a[aria-current='true'] { color: var(--fg); }
+  .bar { width: 12px; height: 1px; flex: none; background: currentColor; opacity: 0.4; }
+  .toc a[aria-current='true'] .bar { opacity: 1; }
+
+  main {
+    grid-column: 2;
+    padding: 72px 0 48px;
+    line-height: 1.7;
+  }
+
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 56px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.3;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .meta { margin: 6px 0 40px; color: var(--muted); font-size: 14px; }
+
+  .prose :global(p) { margin: 0 0 18px; }
+  .prose :global(strong) { font-weight: 500; }
+  .prose :global(h2) {
+    margin: 48px 0 14px;
+    font-size: 15px;
+    font-weight: 500;
+    scroll-margin-top: 32px;
+  }
+  .prose :global(h3) {
+    margin: 32px 0 10px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--muted);
+    scroll-margin-top: 32px;
+  }
+  .prose :global(table) {
+    width: 100%;
+    margin: 0 0 18px;
+    border-collapse: collapse;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .prose :global(th) { font-weight: 400; color: var(--muted); text-align: left; }
+  .prose :global(th), .prose :global(td) { padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .prose :global(a) {
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 3px;
+  }
+  .prose :global(a:hover) { text-decoration-color: var(--muted); }
+  .prose :global(.caption) { color: var(--muted); font-size: 14px; }
+
+  /* Lista de links externos (ex.: referências) */
+  .prose :global(.links) { display: flex; flex-direction: column; margin-bottom: 18px; }
+  .prose :global(.links a) { padding: 6px 0; text-decoration: none; }
+  .prose :global(.links a:hover) { color: var(--muted); }
+  .prose :global(.links a::after) { content: ' ↗'; color: var(--muted); }
+  .prose :global(:not(pre) > code) {
+    font: 13px 'Geist Mono', ui-monospace, monospace;
+    padding: 1px 5px;
+    background: var(--chip);
+    border-radius: 5px;
+  }
+  .prose :global(pre) {
+    margin: 0 0 18px;
+    padding: 16px 18px;
+    background: var(--card) !important;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font: 13px/1.6 'Geist Mono', ui-monospace, monospace;
+    overflow-x: auto;
+  }
+  .prose :global(pre code) { font: inherit; }
+  .prose :global(ul), .prose :global(ol) { margin: 0 0 18px; padding-left: 20px; }
+  .prose :global(li) { margin-bottom: 4px; }
+  .prose :global(blockquote) {
+    margin: 0 0 18px;
+    padding-left: 16px;
+    border-left: 1px solid var(--line);
+    color: var(--muted);
+  }
+  .prose :global(hr) { border: 0; border-top: 1px solid var(--line); margin: 48px 0; }
+
+  /* Paleta do código: monocromática, seletores/funções em muted */
+  .prose {
+    --astro-code-foreground: var(--fg);
+    --astro-code-background: var(--card);
+    --astro-code-token-constant: var(--fg);
+    --astro-code-token-string: var(--fg);
+    --astro-code-token-comment: var(--muted);
+    --astro-code-token-keyword: var(--fg);
+    --astro-code-token-parameter: var(--fg);
+    --astro-code-token-function: var(--muted);
+    --astro-code-token-string-expression: var(--fg);
+    --astro-code-token-punctuation: var(--fg);
+    --astro-code-token-link: var(--fg);
+  }
+
+  .foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 72px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+  }
+
+  @media (max-width: 1000px) {
+    .toc { display: none; }
+    .grid { grid-template-columns: minmax(0, 1fr); }
+    main { grid-column: 1; max-width: 600px; margin: 0 auto; width: 100%; }
+  }
+</style>
+
+<script>
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc]')];
+  const targets = links.map((a) => document.getElementById(a.dataset.toc!)).filter((el) => el !== null);
+
+  function update() {
+    let active = targets[0]?.id;
+    for (const el of targets) if (el.getBoundingClientRect().top < 160) active = el.id;
+    for (const a of links) {
+      if (a.dataset.toc === active) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    }
+  }
+
+  if (links.length) {
+    addEventListener('scroll', update, { passive: true });
+    update();
+  }
+</script>

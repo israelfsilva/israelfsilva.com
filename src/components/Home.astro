@@ -1,0 +1,249 @@
+---
+import Base from '../layouts/Base.astro';
+import Controls from './Controls.astro';
+import { ui, formatDayMonth, formatMonthYear, homePath, postPath, type Lang } from '../i18n';
+import { experience, education, contact } from '../data/site';
+import { getPosts, groupByYear } from '../posts';
+import { getProjects } from '../github';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const years = groupByYear(await getPosts(lang));
+const projects = await getProjects();
+const hrefs = { pt: homePath('pt'), en: homePath('en') };
+const updated = formatMonthYear(new Date(), lang);
+---
+
+<Base lang={lang} title="Israel Silva" description={ui.description[lang]} alternates={hrefs}>
+  <main>
+    <header class="top">
+      <div class="who">
+        <span class="name">Israel Silva</span>
+        <span class="muted">{ui.role[lang]}</span>
+      </div>
+      <Controls lang={lang} hrefs={hrefs} />
+    </header>
+
+    <section class="bio">
+      {
+        lang === 'pt' ? (
+          <>
+            <p>
+              Sou <strong>engenheiro de produto</strong> e há mais de 10 anos construo interfaces para sistemas em que
+              errar custa caro — o <strong>Pix</strong> no Bradesco, câmbio internacional no Santander e o PDV nacional da
+              Casas Bahia.
+            </p>
+            <p>
+              Estudei arquitetura e design de serviços, e isso molda como trabalho: pensando no produto de ponta a ponta,
+              do protótipo no Figma ao deploy em produção.
+            </p>
+            <p class="muted">Me interessa o momento em que o usuário hesita — e o que a interface pode fazer para que ele não precise.</p>
+          </>
+        ) : (
+          <>
+            <p>
+              I'm a <strong>product engineer</strong> who has spent 10+ years building interfaces for systems where
+              mistakes are expensive — <strong>Pix</strong> at Bradesco, international FX at Santander and the nationwide
+              point-of-sale at Casas Bahia.
+            </p>
+            <p>
+              I studied architecture and service design, and it shapes how I work: thinking about the product end to end,
+              from a Figma prototype to a production deploy.
+            </p>
+            <p class="muted">What interests me is the moment a user hesitates — and what the interface can do so they don’t have to.</p>
+          </>
+        )
+      }
+    </section>
+
+    <section>
+      <h2>{ui.experience[lang]}</h2>
+      <div class="list">
+        {
+          experience.map((e) => (
+            <div class="row">
+              <span class="muted num">{e.period}</span>
+              <div class="stack">
+                <span>
+                  <span class="strong">{e.company}</span> <span class="muted">· {e.role}</span>
+                </span>
+                <span class="desc">{e.description[lang]}</span>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section>
+      <h2>{ui.education[lang]}</h2>
+      <div class="list simple">
+        {
+          education.map((e) => (
+            <div class="row">
+              <span class="muted num">{e.label[lang]}</span>
+              <span>
+                {e.value[lang]}
+                {e.detail && <span class="muted"> · {e.detail[lang]}</span>}
+              </span>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section>
+      <h2>{ui.projects[lang]}</h2>
+      <div class="list">
+        {
+          projects.map((p) => (
+            <a class="row bleed" href={p.url} target="_blank" rel="noopener">
+              <span class="muted">{p.language}</span>
+              <div class="stack">
+                <span class="strong">
+                  {p.name} <span class="arrow">↗</span>
+                </span>
+                <span class="desc">{p.description[lang]}</span>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    {
+      years.length > 0 && (
+        <section>
+          <h2>{ui.writing[lang]}</h2>
+          <div class="writing">
+            {years.map(({ year, posts }) => (
+              <>
+                <span class="muted year">{year}</span>
+                <div class="stack">
+                  {posts.map((p) => (
+                    <a class="post bleed" href={postPath(lang, p.slug)}>
+                      <span>{p.data.title}</span>
+                      <time class="muted num" datetime={p.data.date.toISOString().slice(0, 10)}>
+                        {formatDayMonth(p.data.date)}
+                      </time>
+                    </a>
+                  ))}
+                </div>
+              </>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <section class="last">
+      <h2>{ui.contact[lang]}</h2>
+      <div class="list simple">
+        {
+          contact.map((c) => {
+            const external = c.href.startsWith('http');
+            return (
+              <a class="row bleed" href={c.href} {...(external && { target: '_blank', rel: 'noopener me' })}>
+                <span class="muted">{c.label}</span>
+                <span>
+                  {c.value}
+                  {external && <span class="arrow"> ↗</span>}
+                </span>
+              </a>
+            );
+          })
+        }
+      </div>
+    </section>
+
+    <footer>
+      <span class="status"><span class="dot"></span>{ui.open[lang]}</span>
+      <span>{ui.updated[lang]} {updated}</span>
+    </footer>
+  </main>
+</Base>
+
+<style>
+  main {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 72px 24px 48px;
+  }
+
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .who { display: flex; flex-direction: column; }
+  .name, .strong { font-weight: 500; }
+
+  .bio { display: flex; flex-direction: column; gap: 14px; }
+  .bio p { margin: 0; }
+  .bio strong { font-weight: 600; }
+
+  section { margin-bottom: 64px; }
+  section.last { margin-bottom: 72px; }
+
+  h2 {
+    margin: 0 0 6px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13.5px;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .list { display: flex; flex-direction: column; }
+  .list.simple { padding-top: 6px; }
+  .row {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px 0;
+  }
+  .simple .row { padding-block: 8px; }
+  .stack { display: flex; flex-direction: column; }
+  .desc { color: var(--muted); font-size: 14px; }
+
+  /* Linhas clicáveis: o fundo de hover sangra para fora da coluna */
+  .bleed {
+    padding-inline: 10px;
+    margin-inline: -10px;
+    border-radius: 8px;
+  }
+  .bleed:hover { background: var(--hover); }
+
+  .writing {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 12px;
+    padding-top: 6px;
+  }
+  .year { padding-top: 8px; }
+  .post {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 8px;
+  }
+  .post time { flex: none; }
+
+  footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .status { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--dot); flex: none; }
+</style>

@@ -1,0 +1,38 @@
+---
+title: Números tabulares em interfaces financeiras
+description: Por que um saldo não deveria tremer quando muda.
+date: 2026-09-12
+---
+
+import TabularDemo from '../../../components/TabularDemo.astro';
+
+Num app de banco, o número é a interface. Quando um saldo atualiza e os dígitos pulam de lugar, o usuário sente que algo está errado antes mesmo de ler o valor.
+
+A maioria das fontes usa **algarismos proporcionais** por padrão: o 1 é estreito, o 0 é largo. Ótimo para texto corrido, péssimo para colunas.
+
+## Veja a diferença
+
+<TabularDemo lang="pt" />
+
+<p class="caption">O saldo muda sozinho a cada segundo. Alterne e repare na largura.</p>
+
+## Como aplicar
+
+Uma linha de CSS resolve. Aplique em saldos, tabelas, timers e qualquer valor que muda em tempo real.
+
+```css
+.amount {
+  font-variant-numeric: tabular-nums;
+}
+```
+
+## Quando não usar
+
+Em títulos e números isolados dentro de uma frase, os algarismos proporcionais ficam mais bonitos. A regra: se o número muda ou se alinha com outros, tabular.
+
+## Referências
+
+<div class="links">
+  <a href="https://developer.mozilla.org/docs/Web/CSS/font-variant-numeric" target="_blank" rel="noopener">MDN · font-variant-numeric</a>
+  <a href="https://rsms.me/inter/" target="_blank" rel="noopener">Inter · OpenType features</a>
+</div>

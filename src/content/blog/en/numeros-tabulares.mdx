@@ -1,0 +1,38 @@
+---
+title: Tabular numbers in financial interfaces
+description: Why a balance shouldn't jitter when it changes.
+date: 2026-09-12
+---
+
+import TabularDemo from '../../../components/TabularDemo.astro';
+
+In a banking app, the number is the interface. When a balance updates and the digits jump around, users sense something is off before they even read the value.
+
+Most typefaces default to **proportional figures**: the 1 is narrow, the 0 is wide. Great for running text, terrible for columns.
+
+## See the difference
+
+<TabularDemo lang="en" />
+
+<p class="caption">The balance ticks every second. Toggle and watch the width.</p>
+
+## How to apply it
+
+One line of CSS does it. Use it on balances, tables, timers and anything that updates live.
+
+```css
+.amount {
+  font-variant-numeric: tabular-nums;
+}
+```
+
+## When not to
+
+In headlines and single numbers inside a sentence, proportional figures look better. The rule: if the number changes or lines up with others, go tabular.
+
+## Resources
+
+<div class="links">
+  <a href="https://developer.mozilla.org/docs/Web/CSS/font-variant-numeric" target="_blank" rel="noopener">MDN · font-variant-numeric</a>
+  <a href="https://rsms.me/inter/" target="_blank" rel="noopener">Inter · OpenType features</a>
+</div>

@@ -1,0 +1,83 @@
+---
+import '../styles/global.css';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** URLs desta página em cada idioma (para hreflang). */
+  alternates: Partial<Record<Lang, string>>;
+  type?: 'website' | 'article';
+}
+
+const { lang, title, description, alternates, type = 'website' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const isRoot = Astro.url.pathname === '/';
+---
+
+<!doctype html>
+<html lang={lang === 'pt' ? 'pt-BR' : 'en'} data-lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {
+      Object.entries(alternates).map(([l, href]) => (
+        <link rel="alternate" hreflang={l === 'pt' ? 'pt-BR' : 'en'} href={new URL(href, Astro.site)} />
+      ))
+    }
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={lang === 'pt' ? 'pt_BR' : 'en_US'} />
+    <meta name="theme-color" content="#fbfbfa" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111110" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Tema antes do primeiro paint, para não piscar -->
+    <script is:inline>
+      (function () {
+        var d = document.documentElement, t;
+        try { t = localStorage.getItem('is-theme'); } catch (e) {}
+        d.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      })();
+    </script>
+    {
+      isRoot && alternates.en && (
+        <script is:inline define:vars={{ en: alternates.en }}>
+          try { if (localStorage.getItem('is-lang') === 'en') location.replace(en); } catch (e) {}
+        </script>
+      )
+    }
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+    />
+  </head>
+  <body>
+    <slot />
+    <script>
+      document.addEventListener('click', (e) => {
+        const el = (e.target as Element).closest<HTMLElement>('[data-set-lang], [data-toggle-theme]');
+        if (!el) return;
+        try {
+          if (el.dataset.setLang) localStorage.setItem('is-lang', el.dataset.setLang);
+          if (el.hasAttribute('data-toggle-theme')) {
+            const d = document.documentElement;
+            const next = d.dataset.theme === 'dark' ? 'light' : 'dark';
+            d.dataset.theme = next;
+            localStorage.setItem('is-theme', next);
+          }
+        } catch {}
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,74 @@
+html {
+  --bg: #fbfbfa;
+  --fg: #1b1b1a;
+  --muted: #86867f;
+  --line: #ebebe8;
+  --chip: #f0f0ed;
+  --hover: #f3f3f0;
+  --card: #ffffff;
+  --dot: #2fa36b;
+  color-scheme: light;
+}
+html[data-theme='dark'] {
+  --bg: #111110;
+  --fg: #ececea;
+  --muted: #7d7d78;
+  --line: #222220;
+  --chip: #1c1c1b;
+  --hover: #181817;
+  --card: #161615;
+  --dot: #3fbf80;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  text-wrap: pretty;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background 0.2s, color 0.2s;
+}
+a { color: var(--fg); text-decoration: none; }
+::selection { background: var(--fg); color: var(--bg); }
+:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; border-radius: 4px; }
+
+.muted { color: var(--muted); }
+.mono { font-family: 'Geist Mono', ui-monospace, monospace; }
+.num { font-variant-numeric: tabular-nums; }
+.arrow { color: var(--muted); font-weight: 400; }
+
+/* Controles do header */
+.controls { display: flex; align-items: center; gap: 2px; font: 500 12px/1 'Geist Mono', ui-monospace, monospace; }
+.controls .sep { color: var(--line); }
+.lang-link { padding: 8px 6px; color: var(--muted); }
+.lang-link:hover, .lang-link[aria-current='true'] { color: var(--fg); }
+.theme-btn {
+  all: unset;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-left: 6px;
+  border-radius: 8px;
+}
+.theme-btn:hover { background: var(--chip); }
+.theme-btn:focus-visible { outline: 2px solid var(--fg); }
+.theme-icon {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1.5px solid var(--fg);
+  background: linear-gradient(90deg, var(--fg) 50%, transparent 50%);
+  box-sizing: border-box;
+}
+
+/* Links que escurecem/clareiam no hover */
+.link-muted { color: var(--muted); }
+.link-muted:hover { color: var(--fg); }
+.link-fade:hover { color: var(--muted); }

@@ -1,0 +1,20 @@
+---
+import { ui, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  /** Destino de cada idioma. */
+  hrefs: Record<Lang, string>;
+}
+
+const { lang, hrefs } = Astro.props;
+---
+
+<div class="controls">
+  <a class="lang-link" href={hrefs.pt} hreflang="pt-BR" data-set-lang="pt" aria-current={lang === 'pt' ? 'true' : undefined}>PT</a>
+  <span class="sep" aria-hidden="true">/</span>
+  <a class="lang-link" href={hrefs.en} hreflang="en" data-set-lang="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+  <button class="theme-btn" type="button" data-toggle-theme aria-label={ui.toggleTheme[lang]} title={ui.toggleTheme[lang]}>
+    <span class="theme-icon"></span>
+  </button>
+</div>

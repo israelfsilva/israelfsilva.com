@@ -1,0 +1,91 @@
+---
+// Demo do post "Números tabulares": saldo que muda a cada 1s + alternância proporcional/tabular.
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const labels = lang === 'pt' ? ['Proporcional', 'Tabular'] : ['Proportional', 'Tabular'];
+---
+
+<figure class="demo" data-tabular-demo>
+  <div class="amounts" data-amounts>
+    <span>R$ <span data-balance aria-live="off">12.480,50</span></span>
+    <span class="small">+ R$ 1.111,11</span>
+    <span class="small">− R$ 808,00</span>
+  </div>
+  <div class="segmented" role="group">
+    <button type="button" data-mode="proportional-nums" aria-pressed="true">{labels[0]}</button>
+    <button type="button" data-mode="tabular-nums" aria-pressed="false">{labels[1]}</button>
+  </div>
+</figure>
+
+<style>
+  .demo {
+    margin: 0 0 14px;
+    padding: 40px 24px 24px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+  .amounts {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    font-size: 30px;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    font-variant-numeric: proportional-nums;
+  }
+  .small { font-size: 15px; color: var(--muted); }
+  .segmented {
+    display: flex;
+    gap: 4px;
+    padding: 3px;
+    background: var(--chip);
+    border-radius: 999px;
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+  .segmented button {
+    all: unset;
+    cursor: pointer;
+    padding: 5px 12px;
+    border-radius: 999px;
+    color: var(--muted);
+  }
+  .segmented button:hover { color: var(--fg); }
+  .segmented button:focus-visible { outline: 2px solid var(--fg); }
+  .segmented button[aria-pressed='true'] { background: var(--card); color: var(--fg); }
+</style>
+
+<script>
+  const fmt = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  for (const demo of document.querySelectorAll<HTMLElement>('[data-tabular-demo]')) {
+    const amounts = demo.querySelector<HTMLElement>('[data-amounts]')!;
+    const balance = demo.querySelector<HTMLElement>('[data-balance]')!;
+    const buttons = [...demo.querySelectorAll<HTMLButtonElement>('[data-mode]')];
+
+    for (const b of buttons) {
+      b.addEventListener('click', () => {
+        amounts.style.fontVariantNumeric = b.dataset.mode!;
+        for (const o of buttons) o.setAttribute('aria-pressed', String(o === b));
+      });
+    }
+
+    let bal = 12480.5;
+    setInterval(() => {
+      if (document.hidden) return;
+      bal = Math.max(0, bal + (Math.random() * 2400 - 1100));
+      balance.textContent = fmt.format(bal);
+    }, 1000);
+  }
+</script>
