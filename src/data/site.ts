@@ -67,15 +67,15 @@ export const education: { label: T; value: T; detail?: T }[] = [
   },
 ];
 
-// Repositórios de github.com/israelfsilva. Na home são ordenados pelo último push (ver src/github.ts).
+// Projetos em destaque na home, na ordem em que aparecem.
 export const projects: { name: string; language: string; url: string; description: T }[] = [
   {
-    name: 'Chronobar',
-    language: 'Swift',
-    url: 'https://github.com/israelfsilva/Chronobar',
+    name: 'timan',
+    language: 'TypeScript',
+    url: 'https://github.com/israelfsilva/timan',
     description: {
-      pt: 'App nativo para macOS que mostra o progresso do ano, mês, semana ou dia na barra de menus.',
-      en: 'Native macOS app that shows year, month, week or day progress in the menu bar.',
+      pt: 'CLI para consultar fusos horários no terminal, inspirada no relógio da Casio.',
+      en: 'A command-line tool for looking up time zones, inspired by the Casio watch.',
     },
   },
   {
@@ -85,24 +85,6 @@ export const projects: { name: string; language: string; url: string; descriptio
     description: {
       pt: 'Biblioteca aberta de acordes para violão, inspirada no clássico Billion Chords.',
       en: 'An open-source guitar chord library, inspired by the classic Billion Chords.',
-    },
-  },
-  {
-    name: 'timan',
-    language: 'TypeScript',
-    url: 'https://github.com/israelfsilva/timan',
-    description: {
-      pt: 'CLI para consultar fusos horários pelo terminal.',
-      en: 'A command-line tool for looking up time zones.',
-    },
-  },
-  {
-    name: 'notepad95',
-    language: 'Swift',
-    url: 'https://github.com/israelfsilva/notepad95',
-    description: {
-      pt: 'Editor de texto simples para macOS inspirado no Bloco de Notas do Windows 95.',
-      en: 'A simple macOS text editor inspired by the Windows 95 Notepad.',
     },
   },
 ];
