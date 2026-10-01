@@ -79,9 +79,9 @@ export const projects: { name: string; language: string; url: string; descriptio
     },
   },
   {
-    name: 'openchords',
+    name: 'EveryChord',
     language: 'TypeScript',
-    url: 'https://github.com/israelfsilva/openchords',
+    url: 'https://github.com/israelfsilva/everychord',
     description: {
       pt: 'Biblioteca aberta de acordes para violão, inspirada no clássico Billion Chords.',
       en: 'An open-source guitar chord library, inspired by the classic Billion Chords.',
