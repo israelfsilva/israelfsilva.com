@@ -70,7 +70,16 @@ export const education: { label: T; value: T; detail?: T }[] = [
 // Projetos em destaque na home, na ordem em que aparecem.
 export const projects: { name: string; language: string; url: string; description: T }[] = [
   {
-    name: 'timan',
+    name: 'EveryChord',
+    language: 'TypeScript',
+    url: 'https://github.com/israelfsilva/everychord',
+    description: {
+      pt: 'Biblioteca aberta de acordes para violão, inspirada no clássico Billion Chords.',
+      en: 'An open-source guitar chord library, inspired by the classic Billion Chords.',
+    },
+  },
+  {
+    name: 'Timan',
     language: 'TypeScript',
     url: 'https://github.com/israelfsilva/timan',
     description: {
@@ -79,12 +88,12 @@ export const projects: { name: string; language: string; url: string; descriptio
     },
   },
   {
-    name: 'EveryChord',
-    language: 'TypeScript',
-    url: 'https://github.com/israelfsilva/everychord',
+    name: 'History Plus',
+    language: 'JavaScript',
+    url: 'https://chromewebstore.google.com/detail/history-plus/klpjgnkenhjeebapfbbnikjbbnlmgnoj',
     description: {
-      pt: 'Biblioteca aberta de acordes para violão, inspirada no clássico Billion Chords.',
-      en: 'An open-source guitar chord library, inspired by the classic Billion Chords.',
+      pt: 'Extensão do Chrome que leva o histórico para o painel lateral, com filtro por data e todas as visitas.',
+      en: 'A Chrome extension that brings your history into the side panel, with date filtering and every visit.',
     },
   },
 ];
